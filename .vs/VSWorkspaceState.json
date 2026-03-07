@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\backend",
+    "\\backend\\app",
+    "\\backend\\app\\agents",
+    "\\backend\\app\\core",
+    "\\backend\\app\\static",
+    "\\demo_app",
+    "\\tests"
+  ],
+  "SelectedNode": "\\backend\\app\\static\\index.html",
+  "PreviewInSolutionExplorer": false
+}
