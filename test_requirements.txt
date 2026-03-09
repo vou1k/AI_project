@@ -1,0 +1,18 @@
+Requirement 1: User Authentication (REQ-001)
+Description: System should allow users to authenticate with username and password.
+Acceptance Criteria:
+- AC1: Successful authentication with valid credentials (username: "admin", password: "admin123") returns token
+- AC2: Authentication with invalid password returns 401 error
+- AC3: Authentication with non-existent user returns 404 error
+
+Requirement 2: Get Items List (REQ-002)
+Description: Authenticated users can view list of items.
+Acceptance Criteria:
+- AC4: GET /api/items with valid token returns list of 3 items
+- AC5: GET /api/items without token returns 401 error
+
+Requirement 3: Get Single Item (REQ-003)
+Description: Authenticated users can view item by ID.
+Acceptance Criteria:
+- AC6: GET /api/items/1 with valid token returns item with id=1
+- AC7: GET /api/items/999 with valid token returns 404 error

@@ -1,0 +1,778 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Test Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+            .header h1 {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                font-size: 1.2em;
+                opacity: 0.9;
+            }
+
+        .content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            border: 2px dashed #dee2e6;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 30px;
+        }
+
+            .upload-section:hover {
+                border-color: #667eea;
+                background: #f1f3f5;
+            }
+
+            .upload-section input {
+                display: none;
+            }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #868e96;
+            font-size: 0.9em;
+        }
+
+        .session-info {
+            background: #e7f5ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+            .session-info.active {
+                display: block;
+            }
+
+            .session-info h3 {
+                color: #1864ab;
+                margin-bottom: 15px;
+            }
+
+        .session-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .session-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+            .session-item .label {
+                color: #495057;
+                font-size: 0.9em;
+                margin-bottom: 5px;
+            }
+
+            .session-item .value {
+                font-size: 1.5em;
+                font-weight: bold;
+                color: #1864ab;
+            }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            }
+
+            .btn-primary:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+        .requirements-section,
+        .tests-section,
+        .results-section,
+        .chat-section {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .section-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .requirement-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .requirement-title {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .test-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+        }
+
+            .test-item.positive {
+                border-left-color: #40c057;
+            }
+
+            .test-item.negative {
+                border-left-color: #fa5252;
+            }
+
+            .test-item.boundary {
+                border-left-color: #fd7e14;
+            }
+
+        .test-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #868e96;
+            margin-top: 5px;
+        }
+
+        .result-item {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+            .result-item.passed {
+                background: #d3f9d8;
+                border-left: 4px solid #40c057;
+            }
+
+            .result-item.failed {
+                background: #ffe3e3;
+                border-left: 4px solid #fa5252;
+            }
+
+        /* Chat styles */
+        .chat-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+            .chat-message.ai {
+                justify-content: flex-start;
+            }
+
+            .chat-message.user {
+                justify-content: flex-end;
+            }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .chat-message.ai .message-content {
+            background: #e7f5ff;
+            color: #1864ab;
+        }
+
+        .chat-message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            gap: 10px;
+            border-top: 1px solid #dee2e6;
+        }
+
+            .chat-input input {
+                flex: 1;
+                padding: 12px;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                font-size: 14px;
+            }
+
+                .chat-input input:focus {
+                    outline: none;
+                    border-color: #667eea;
+                }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+            .loading.active {
+                display: block;
+            }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+        }
+
+            .typing-indicator span {
+                width: 8px;
+                height: 8px;
+                background: #adb5bd;
+                border-radius: 50%;
+                animation: typing 1s infinite ease-in-out;
+            }
+
+                .typing-indicator span:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .typing-indicator span:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+        @keyframes typing {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Test Platform</h1>
+            <p>Automatic test generation from requirements with AI assistance</p>
+        </div>
+
+        <div class="content">
+            <!-- File upload -->
+            <div class="upload-section" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" accept=".txt,.pdf,.docx" onchange="uploadFile()">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Upload requirements document</div>
+                <div class="upload-hint">Supports TXT, PDF, DOCX formats</div>
+            </div>
+
+            <!-- Session info -->
+            <div class="session-info" id="sessionInfo">
+                <h3>Current Session</h3>
+                <div class="session-details">
+                    <div class="session-item">
+                        <div class="label">Session ID</div>
+                        <div class="value" id="sessionId">-</div>
+                    </div>
+                    <div class="session-item">
+                        <div class="label">Requirements</div>
+                        <div class="value" id="reqCount">0</div>
+                    </div>
+                    <div class="session-item">
+                        <div class="label">Test Cases</div>
+                        <div class="value" id="testCount">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="actions">
+                <button class="btn btn-primary" onclick="generateTests()" id="generateBtn" disabled>
+                    🚀 Generate Tests
+                </button>
+                <button class="btn btn-primary" onclick="runTests()" id="runBtn" disabled>
+                    ▶️ Run Tests
+                </button>
+                <button class="btn btn-primary" onclick="analyzeResults()" id="analyzeBtn" disabled>
+                    🔍 Analyze with AI
+                </button>
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing...</p>
+            </div>
+
+            <!-- Requirements -->
+            <div class="requirements-section" id="requirementsSection" style="display: none;">
+                <div class="section-header">
+                    📋 Extracted Requirements
+                </div>
+                <div class="section-body" id="requirementsList">
+                </div>
+            </div>
+
+            <!-- Test cases -->
+            <div class="tests-section" id="testsSection" style="display: none;">
+                <div class="section-header">
+                    🧪 Generated Test Cases
+                </div>
+                <div class="section-body" id="testsList">
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <div class="section-header">
+                    📊 Test Results
+                </div>
+                <div class="section-body" id="resultsList">
+                </div>
+            </div>
+
+            <!-- AI Chat -->
+            <div class="chat-section" id="chatSection" style="display: none;">
+                <div class="section-header">
+                    💬 AI Assistant
+                </div>
+                <div class="chat-body" id="chatMessages">
+                    <div class="chat-message ai">
+                        <div class="message-content">
+                            👋 Привет! Я AI-ассистент. Задавай вопросы!
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Ask AI about test failures..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSessionId = null;
+
+        async function uploadFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        if (!file) return;
+
+        showLoading();
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+        const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+        });
+
+        const data = await response.json();
+        currentSessionId = data.session_id;
+
+        document.getElementById('sessionInfo').classList.add('active');
+        document.getElementById('sessionId').textContent = currentSessionId || '-';
+        document.getElementById('reqCount').textContent = (data.requirements || []).length;
+
+        displayRequirements(data.requirements || []);
+
+        document.getElementById('generateBtn').disabled = false;
+
+        } catch (error) {
+        alert('Error uploading file: ' + error);
+        } finally {
+        hideLoading();
+        }
+        }
+
+        async function generateTests() {
+        if (!currentSessionId) return;
+
+        showLoading();
+
+        try {
+        const response = await fetch(`/api/generate/${currentSessionId}`, {
+        method: 'POST'
+        });
+
+        const data = await response.json();
+
+        document.getElementById('testCount').textContent = (data.test_cases || []).length;
+        displayTestCases(data.test_cases || []);
+
+        document.getElementById('runBtn').disabled = false;
+
+        } catch (error) {
+        alert('Error generating tests: ' + error);
+        } finally {
+        hideLoading();
+        }
+        }
+
+        async function runTests() {
+        if (!currentSessionId) return;
+
+        showLoading();
+
+        try {
+        const response = await fetch(`/api/run/${currentSessionId}`, {
+        method: 'POST'
+        });
+
+        const data = await response.json();
+
+        displayResults(data || {});
+
+        document.getElementById('analyzeBtn').disabled = false;
+
+        } catch (error) {
+        alert('Error running tests: ' + error);
+        } finally {
+        hideLoading();
+        }
+        }
+
+        async function analyzeResults() {
+        if (!currentSessionId) return;
+
+        showLoading();
+
+        try {
+        const debugResponse = await fetch(`/api/debug/${currentSessionId}`, {
+        method: 'POST'
+        });
+
+        await debugResponse.json();
+
+        document.getElementById('chatSection').style.display = 'block';
+
+        // Clear old messages except first
+        const chatMessages = document.getElementById('chatMessages');
+        while (chatMessages.children.length > 1) {
+        chatMessages.removeChild(chatMessages.lastChild);
+        }
+
+        const chatResponse = await fetch(`/api/chat/${currentSessionId}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: ""})
+        });
+
+        const chatData = await chatResponse.json();
+        if (chatData && chatData.response) {
+        addChatMessage(chatData.response, 'ai');
+        }
+
+        } catch (error) {
+        alert('Error analyzing results: ' + error);
+        } finally {
+        hideLoading();
+        }
+        }
+
+        async function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+
+        if (!message || !currentSessionId) return;
+
+        addChatMessage(message, 'user');
+        input.value = '';
+
+        const typingDiv = showTypingIndicator();
+
+        try {
+        const response = await fetch(`/api/chat/${currentSessionId}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: message})
+        });
+
+        const data = await response.json();
+
+        if (typingDiv) typingDiv.remove();
+
+        if (data && data.response) {
+        addChatMessage(data.response, 'ai');
+        } else {
+        addChatMessage("AI response received", 'ai');
+        }
+
+        } catch (error) {
+        if (typingDiv) typingDiv.remove();
+        addChatMessage('Error: ' + error.message, 'ai');
+        }
+        }
+
+        function showTypingIndicator() {
+        const chatMessages = document.getElementById('chatMessages');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chat-message ai';
+        typingDiv.innerHTML = `
+        <div class="message-content">
+        <div class="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+        </div>
+        </div>
+        `;
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return typingDiv;
+        }
+
+        function addChatMessage(message, sender) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${sender}`;
+
+        // Безопасное преобразование
+        let safeMessage = message || 'Пустое сообщение';
+        if (typeof safeMessage !== 'string') {
+        safeMessage = String(safeMessage);
+        }
+        safeMessage = safeMessage.replace(/\n/g, '<br>');
+
+        messageDiv.innerHTML = `<div class="message-content">${safeMessage}</div>`;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function displayRequirements(requirements) {
+        const container = document.getElementById('requirementsList');
+        container.innerHTML = '';
+
+        if (!requirements || requirements.length === 0) {
+        container.innerHTML = '<p>No requirements found</p>';
+        return;
+        }
+
+        requirements.forEach(req => {
+        if (!req) return;
+
+        const reqEl = document.createElement('div');
+        reqEl.className = 'requirement-item';
+
+        reqEl.innerHTML = `
+        <div class="requirement-title">${req.id || 'REQ'}: ${req.title || 'No title'}</div>
+        <div style="color: #495057;">${(req.description || '').substring(0, 200)}</div>
+        `;
+
+        container.appendChild(reqEl);
+        });
+
+        document.getElementById('requirementsSection').style.display = 'block';
+        }
+
+        function displayTestCases(testCases) {
+        const container = document.getElementById('testsList');
+        container.innerHTML = '';
+
+        if (!testCases || testCases.length === 0) {
+        container.innerHTML = '<p>No test cases generated</p>';
+        return;
+        }
+
+        testCases.forEach(tc => {
+        if (!tc) return;
+
+        const tcEl = document.createElement('div');
+        tcEl.className = `test-item ${tc.type || 'positive'}`;
+
+        tcEl.innerHTML = `
+        <div class="test-title">${tc.title || 'Test case'}</div>
+        <div><strong>Type:</strong> ${tc.type || 'positive'}</div>
+        <div><strong>Expected:</strong> ${tc.expected_result || 'No description'}</div>
+        `;
+
+        container.appendChild(tcEl);
+        });
+
+        document.getElementById('testsSection').style.display = 'block';
+        }
+
+        function displayResults(results) {
+        const container = document.getElementById('resultsList');
+        container.innerHTML = '';
+
+        const total = results.total || 0;
+        const passed = results.passed || 0;
+        const failed = (results.failed || 0) + (results.errors || 0);
+
+        const statsHtml = `
+        <div class="stats">
+        <div class="stat-card">
+        <div class="stat-value">${total}</div>
+        <div class="stat-label">Total Tests</div>
+        </div>
+        <div class="stat-card">
+        <div class="stat-value" style="color: #40c057;">${passed}</div>
+        <div class="stat-label">Passed</div>
+        </div>
+        <div class="stat-card">
+        <div class="stat-value" style="color: #fa5252;">${failed}</div>
+        <div class="stat-label">Failed</div>
+        </div>
+        </div>
+        `;
+
+        container.innerHTML = statsHtml;
+        document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function showLoading() {
+        document.getElementById('loading').classList.add('active');
+        }
+
+        function hideLoading() {
+        document.getElementById('loading').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
