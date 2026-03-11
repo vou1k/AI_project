@@ -13,18 +13,17 @@
 
 ## Архитектура проекта
 
-```
-├── backend/                    # Бэкенд на FastAPI
-│   └── app/
-│       └── main.py             # Точка входа API
-├── demo_app/                    # Демонстрационное приложение
-├── tests/                       # Тесты проекта
-├── ai_test_platform.py          # Основная платформа для тестирования AI
-├── ai_test_platform.pyproj      # Проектный файл Python
-├── ai_test_platform.sln         # Solution file
-├── test_requirements.txt        # Зависимости для тестирования
-└── .gitignore                   # Исключения Git
-```
+📦 AI-Knowledge-Synthesis
+├── 📁 backend
+│ └── 📁 app
+│ └── 📄 main.py # Точка входа API
+├── 📁 demo_app # Демонстрационное приложение
+├── 📁 tests # Тесты проекта
+├── 📄 ai_test_platform.py # Основная платформа для тестирования AI
+├── 📄 ai_test_platform.pyproj # Проектный файл Python
+├── 📄 ai_test_platform.sln # Solution file
+├── 📄 test_requirements.txt # Зависимости для тестирования
+└── 📄 .gitignore # Исключения Git
 
 ## Быстрый старт
 
