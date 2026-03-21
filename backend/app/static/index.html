@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -153,19 +153,31 @@
 
             .btn-primary:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 5px 15px rgba(102,126,234,0.4);
             }
 
-            .btn-primary:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-                transform: none;
+        .btn-success {
+            background: #40c057;
+            color: white;
+        }
+
+            .btn-success:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(64,192,87,0.4);
             }
 
-        .requirements-section,
-        .tests-section,
-        .results-section,
-        .chat-section {
+        .btn-warning {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .section {
             background: white;
             border-radius: 10px;
             border: 1px solid #dee2e6;
@@ -179,12 +191,17 @@
             border-bottom: 1px solid #dee2e6;
             font-weight: 600;
             color: #495057;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .section-body {
             padding: 20px;
             max-height: 400px;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         .requirement-item {
@@ -193,6 +210,7 @@
             padding: 15px;
             margin-bottom: 15px;
             border-left: 4px solid #667eea;
+            width: 100%;
         }
 
         .requirement-title {
@@ -207,6 +225,7 @@
             padding: 15px;
             margin-bottom: 15px;
             border-left: 4px solid;
+            width: 100%;
         }
 
             .test-item.positive {
@@ -231,6 +250,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-bottom: 20px;
+            width: 100%;
         }
 
         .stat-card {
@@ -255,6 +275,7 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
+            width: 100%;
         }
 
             .result-item.passed {
@@ -267,17 +288,19 @@
                 border-left: 4px solid #fa5252;
             }
 
-        /* Chat styles */
         .chat-body {
             padding: 20px;
             max-height: 400px;
             overflow-y: auto;
             background: #f8f9fa;
+            display: flex;
+            flex-direction: column-reverse;
         }
 
         .chat-message {
             margin-bottom: 15px;
             display: flex;
+            width: 100%;
         }
 
             .chat-message.ai {
@@ -381,7 +404,7 @@
                 }
 
         @keyframes typing {
-            0%, 100% {
+            0%,100% {
                 transform: translateY(0);
             }
 
@@ -389,390 +412,320 @@
                 transform: translateY(-5px);
             }
         }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+            .badge.learned {
+                background: #40c057;
+                color: white;
+            }
+
+        .fix-button {
+            background: #40c057;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+            .fix-button:hover {
+                background: #2b8a3e;
+            }
+
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🤖 AI Test Platform</h1>
-            <p>Automatic test generation from requirements with AI assistance</p>
+            <p>Автоматическая генерация тестов с AI, RAG и обучением</p>
         </div>
-
         <div class="content">
-            <!-- File upload -->
+            <!-- Загрузка требований -->
             <div class="upload-section" onclick="document.getElementById('fileInput').click()">
                 <input type="file" id="fileInput" accept=".txt,.pdf,.docx" onchange="uploadFile()">
                 <div class="upload-icon">📄</div>
-                <div class="upload-text">Upload requirements document</div>
-                <div class="upload-hint">Supports TXT, PDF, DOCX formats</div>
+                <div class="upload-text">Загрузите файл с требованиями</div>
+                <div class="upload-hint">Поддерживаются TXT, PDF, DOCX</div>
             </div>
 
-            <!-- Session info -->
+            <!-- Сессионная информация -->
             <div class="session-info" id="sessionInfo">
-                <h3>Current Session</h3>
+                <h3>Текущая сессия</h3>
                 <div class="session-details">
                     <div class="session-item">
-                        <div class="label">Session ID</div>
+                        <div class="label">ID сессии</div>
                         <div class="value" id="sessionId">-</div>
                     </div>
                     <div class="session-item">
-                        <div class="label">Requirements</div>
+                        <div class="label">Требований</div>
                         <div class="value" id="reqCount">0</div>
                     </div>
                     <div class="session-item">
-                        <div class="label">Test Cases</div>
+                        <div class="label">Тест-кейсов</div>
                         <div class="value" id="testCount">0</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Action buttons -->
+            <!-- Кнопки действий (основные) -->
             <div class="actions">
-                <button class="btn btn-primary" onclick="generateTests()" id="generateBtn" disabled>
-                    🚀 Generate Tests
-                </button>
-                <button class="btn btn-primary" onclick="runTests()" id="runBtn" disabled>
-                    ▶️ Run Tests
-                </button>
-                <button class="btn btn-primary" onclick="analyzeResults()" id="analyzeBtn" disabled>
-                    🔍 Analyze with AI
-                </button>
+                <button class="btn btn-primary" onclick="generateTests()" id="generateBtn" disabled>🚀 Сгенерировать тесты</button>
+                <button class="btn btn-primary" onclick="runTests()" id="runBtn" disabled>▶️ Запустить тесты</button>
+                <button class="btn btn-success" onclick="analyzeResults()" id="analyzeBtn" disabled>🔍 AI анализ</button>
             </div>
 
-            <!-- Loading -->
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Processing...</p>
+            <!-- Новые кнопки (загрузка кода/проекта, просмотр кода, метрики) -->
+            <div class="actions">
+                <button class="btn btn-primary" onclick="uploadCode()" id="uploadCodeBtn" disabled>📄 Загрузить код тестов</button>
+                <button class="btn btn-primary" onclick="uploadProject()" id="uploadProjectBtn" disabled>📁 Загрузить проект (ZIP)</button>
+                <button class="btn btn-primary" onclick="showCode()" id="showCodeBtn" disabled>💻 Показать сгенерированный код</button>
+                <button class="btn btn-primary" onclick="showCoverage()" id="coverageBtn" disabled>📊 Метрики покрытия</button>
             </div>
 
-            <!-- Requirements -->
-            <div class="requirements-section" id="requirementsSection" style="display: none;">
-                <div class="section-header">
-                    📋 Extracted Requirements
-                </div>
-                <div class="section-body" id="requirementsList">
-                </div>
-            </div>
+            <div class="loading" id="loading"><div class="spinner"></div><p>Обработка...</p></div>
 
-            <!-- Test cases -->
-            <div class="tests-section" id="testsSection" style="display: none;">
-                <div class="section-header">
-                    🧪 Generated Test Cases
-                </div>
-                <div class="section-body" id="testsList">
-                </div>
-            </div>
-
-            <!-- Results -->
-            <div class="results-section" id="resultsSection" style="display: none;">
-                <div class="section-header">
-                    📊 Test Results
-                </div>
-                <div class="section-body" id="resultsList">
-                </div>
-            </div>
-
-            <!-- AI Chat -->
-            <div class="chat-section" id="chatSection" style="display: none;">
-                <div class="section-header">
-                    💬 AI Assistant
-                </div>
-                <div class="chat-body" id="chatMessages">
-                    <div class="chat-message ai">
-                        <div class="message-content">
-                            👋 Привет! Я AI-ассистент. Задавай вопросы!
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-input">
-                    <input type="text" id="chatInput" placeholder="Ask AI about test failures..." onkeypress="if(event.key==='Enter') sendChatMessage()">
-                    <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
-                </div>
-            </div>
+            <!-- Блоки отображения -->
+            <div class="section" id="requirementsSection" style="display:none;"><div class="section-header">📋 Требования</div><div class="section-body" id="requirementsList"></div></div>
+            <div class="section" id="testsSection" style="display:none;"><div class="section-header">🧪 Сгенерированные тесты</div><div class="section-body" id="testsList"></div></div>
+            <div class="section" id="resultsSection" style="display:none;"><div class="section-header">📊 Результаты тестирования</div><div class="section-body" id="resultsList"></div></div>
+            <div class="section" id="codeSection" style="display:none;"><div class="section-header">💻 Сгенерированный код (pytest)<button class="btn btn-success" onclick="copyCode()">📋 Копировать</button></div><div class="section-body"><pre id="codeDisplay">Код загружается...</pre></div></div>
+            <div class="section" id="chatSection" style="display:none;"><div class="section-header">💬 Чат с AI (с памятью)</div><div class="chat-body" id="chatMessages"><div class="chat-message ai"><div class="message-content">👋 Привет! Я AI с памятью. Я запоминаю исправления и учусь на них. Задавай вопросы!</div></div></div><div class="chat-input"><input type="text" id="chatInput" placeholder="Спроси AI о тестах..." onkeypress="if(event.key==='Enter') sendChatMessage()"><button class="btn btn-primary" onclick="sendChatMessage()">Отправить</button></div></div>
         </div>
     </div>
 
     <script>
         let currentSessionId = null;
 
+        // ------------------ Загрузка требований ------------------
         async function uploadFile() {
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0];
-
+        const file = document.getElementById('fileInput').files[0];
         if (!file) return;
-
         showLoading();
-
         const formData = new FormData();
         formData.append('file', file);
-
         try {
-        const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-        });
-
-        const data = await response.json();
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = await res.json();
         currentSessionId = data.session_id;
-
         document.getElementById('sessionInfo').classList.add('active');
-        document.getElementById('sessionId').textContent = currentSessionId || '-';
+        document.getElementById('sessionId').textContent = currentSessionId;
         document.getElementById('reqCount').textContent = (data.requirements || []).length;
-
-        displayRequirements(data.requirements || []);
-
-        document.getElementById('generateBtn').disabled = false;
-
-        } catch (error) {
-        alert('Error uploading file: ' + error);
-        } finally {
-        hideLoading();
-        }
-        }
-
-        async function generateTests() {
-        if (!currentSessionId) return;
-
-        showLoading();
-
-        try {
-        const response = await fetch(`/api/generate/${currentSessionId}`, {
-        method: 'POST'
-        });
-
-        const data = await response.json();
-
         document.getElementById('testCount').textContent = (data.test_cases || []).length;
+        displayRequirements(data.requirements || []);
         displayTestCases(data.test_cases || []);
 
+        // Включаем кнопки
+        document.getElementById('generateBtn').disabled = false;
+        document.getElementById('uploadCodeBtn').disabled = false;
+        document.getElementById('uploadProjectBtn').disabled = false;
+        document.getElementById('showCodeBtn').disabled = false;
+        document.getElementById('coverageBtn').disabled = false;
+        } catch (err) { alert('Ошибка загрузки: ' + err); } finally { hideLoading(); }
+        }
+
+        // ------------------ Генерация тестов ------------------
+        async function generateTests() {
+        if (!currentSessionId) return;
+        showLoading();
+        try {
+        const res = await fetch(`/api/generate/${currentSessionId}`, { method: 'POST' });
+        const data = await res.json();
+        document.getElementById('testCount').textContent = (data.test_cases || []).length;
+        displayTestCases(data.test_cases || []);
         document.getElementById('runBtn').disabled = false;
-
-        } catch (error) {
-        alert('Error generating tests: ' + error);
-        } finally {
-        hideLoading();
-        }
+        } catch (err) { alert('Ошибка генерации: ' + err); } finally { hideLoading(); }
         }
 
+        // ------------------ Запуск тестов ------------------
         async function runTests() {
         if (!currentSessionId) return;
-
         showLoading();
-
         try {
-        const response = await fetch(`/api/run/${currentSessionId}`, {
-        method: 'POST'
-        });
-
-        const data = await response.json();
-
+        const res = await fetch(`/api/run/${currentSessionId}`, { method: 'POST' });
+        const data = await res.json();
         displayResults(data || {});
-
         document.getElementById('analyzeBtn').disabled = false;
-
-        } catch (error) {
-        alert('Error running tests: ' + error);
-        } finally {
-        hideLoading();
-        }
+        } catch (err) { alert('Ошибка запуска: ' + err); } finally { hideLoading(); }
         }
 
+        // ------------------ AI анализ ------------------
         async function analyzeResults() {
         if (!currentSessionId) return;
-
         showLoading();
-
         try {
-        const debugResponse = await fetch(`/api/debug/${currentSessionId}`, {
-        method: 'POST'
-        });
-
-        await debugResponse.json();
-
+        // сначала получаем debug информацию (она уже есть на бэке)
+        await fetch(`/api/debug/${currentSessionId}`, { method: 'POST' });
         document.getElementById('chatSection').style.display = 'block';
-
-        // Clear old messages except first
         const chatMessages = document.getElementById('chatMessages');
-        while (chatMessages.children.length > 1) {
-        chatMessages.removeChild(chatMessages.lastChild);
+        while (chatMessages.children.length > 1) chatMessages.removeChild(chatMessages.lastChild);
+        const chatRes = await fetch(`/api/chat/${currentSessionId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: "" }) });
+        const chatData = await chatRes.json();
+        if (chatData && chatData.response) addChatMessage(chatData.response, 'ai');
+        } catch (err) { alert('Ошибка анализа: ' + err); } finally { hideLoading(); }
         }
 
-        const chatResponse = await fetch(`/api/chat/${currentSessionId}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({message: ""})
-        });
-
-        const chatData = await chatResponse.json();
-        if (chatData && chatData.response) {
-        addChatMessage(chatData.response, 'ai');
+        // ------------------ Новые функции ------------------
+        async function uploadCode() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.py';
+        input.onchange = async (e) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('session_id', currentSessionId);
+        const res = await fetch('/api/upload_code', { method: 'POST', body: formData });
+        const data = await res.json();
+        alert('Код загружен');
+        };
+        input.click();
         }
 
-        } catch (error) {
-        alert('Error analyzing results: ' + error);
-        } finally {
-        hideLoading();
-        }
-        }
-
-        async function sendChatMessage() {
-        const input = document.getElementById('chatInput');
-        const message = input.value.trim();
-
-        if (!message || !currentSessionId) return;
-
-        addChatMessage(message, 'user');
-        input.value = '';
-
-        const typingDiv = showTypingIndicator();
-
-        try {
-        const response = await fetch(`/api/chat/${currentSessionId}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({message: message})
-        });
-
-        const data = await response.json();
-
-        if (typingDiv) typingDiv.remove();
-
-        if (data && data.response) {
-        addChatMessage(data.response, 'ai');
-        } else {
-        addChatMessage("AI response received", 'ai');
+        async function uploadProject() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.zip';
+        input.onchange = async (e) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('session_id', currentSessionId);
+        const res = await fetch('/api/upload_project', { method: 'POST', body: formData });
+        const data = await res.json();
+        alert('Проект загружен');
+        };
+        input.click();
         }
 
-        } catch (error) {
-        if (typingDiv) typingDiv.remove();
-        addChatMessage('Error: ' + error.message, 'ai');
-        }
-        }
-
-        function showTypingIndicator() {
-        const chatMessages = document.getElementById('chatMessages');
-        const typingDiv = document.createElement('div');
-        typingDiv.className = 'chat-message ai';
-        typingDiv.innerHTML = `
-        <div class="message-content">
-        <div class="typing-indicator">
-        <span></span>
-        <span></span>
-        <span></span>
-        </div>
-        </div>
-        `;
-        chatMessages.appendChild(typingDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        return typingDiv;
+        async function showCode() {
+        if (!currentSessionId) return;
+        const res = await fetch(`/api/code/${currentSessionId}`);
+        const data = await res.json();
+        document.getElementById('codeDisplay').textContent = data.code || 'Код не найден';
+        document.getElementById('codeSection').style.display = 'block';
         }
 
-        function addChatMessage(message, sender) {
-        const chatMessages = document.getElementById('chatMessages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${sender}`;
-
-        // Безопасное преобразование
-        let safeMessage = message || 'Пустое сообщение';
-        if (typeof safeMessage !== 'string') {
-        safeMessage = String(safeMessage);
-        }
-        safeMessage = safeMessage.replace(/\n/g, '<br>');
-
-        messageDiv.innerHTML = `<div class="message-content">${safeMessage}</div>`;
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        async function showCoverage() {
+        if (!currentSessionId) return;
+        const res = await fetch(`/api/coverage/${currentSessionId}`);
+        const data = await res.json();
+        alert(JSON.stringify(data, null, 2));
         }
 
+        function copyCode() {
+        const code = document.getElementById('codeDisplay').innerText;
+        navigator.clipboard.writeText(code).then(() => alert('Код скопирован'));
+        }
+
+        // ------------------ Отображение элементов (новые – сверху) ------------------
         function displayRequirements(requirements) {
         const container = document.getElementById('requirementsList');
         container.innerHTML = '';
-
-        if (!requirements || requirements.length === 0) {
-        container.innerHTML = '<p>No requirements found</p>';
-        return;
-        }
-
+        if (!requirements || requirements.length === 0) { container.innerHTML = '<p>Нет требований</p>'; return; }
         requirements.forEach(req => {
-        if (!req) return;
-
-        const reqEl = document.createElement('div');
-        reqEl.className = 'requirement-item';
-
-        reqEl.innerHTML = `
-        <div class="requirement-title">${req.id || 'REQ'}: ${req.title || 'No title'}</div>
-        <div style="color: #495057;">${(req.description || '').substring(0, 200)}</div>
-        `;
-
-        container.appendChild(reqEl);
+        const el = document.createElement('div'); el.className = 'requirement-item';
+        el.innerHTML = `<div class="requirement-title">${req.id || 'REQ'}: ${req.title || 'Без названия'}</div><div style="color:#495057;">${(req.description || '').substring(0,200)}</div>`;
+        container.insertBefore(el, container.firstChild);
         });
-
         document.getElementById('requirementsSection').style.display = 'block';
         }
 
         function displayTestCases(testCases) {
         const container = document.getElementById('testsList');
         container.innerHTML = '';
-
-        if (!testCases || testCases.length === 0) {
-        container.innerHTML = '<p>No test cases generated</p>';
-        return;
-        }
-
+        if (!testCases || testCases.length === 0) { container.innerHTML = '<p>Нет тестов</p>'; return; }
         testCases.forEach(tc => {
-        if (!tc) return;
-
-        const tcEl = document.createElement('div');
-        tcEl.className = `test-item ${tc.type || 'positive'}`;
-
-        tcEl.innerHTML = `
-        <div class="test-title">${tc.title || 'Test case'}</div>
-        <div><strong>Type:</strong> ${tc.type || 'positive'}</div>
-        <div><strong>Expected:</strong> ${tc.expected_result || 'No description'}</div>
-        `;
-
-        container.appendChild(tcEl);
+        const el = document.createElement('div'); el.className = `test-item ${tc.type || 'positive'}`;
+        el.innerHTML = `<div class="test-title">${tc.title || 'Тест'}</div><div><strong>Тип:</strong> ${tc.type || 'positive'}</div><div><strong>Ожидание:</strong> ${tc.expected_result || 'Нет'}</div>`;
+        container.insertBefore(el, container.firstChild);
         });
-
         document.getElementById('testsSection').style.display = 'block';
         }
 
         function displayResults(results) {
         const container = document.getElementById('resultsList');
         container.innerHTML = '';
-
-        const total = results.total || 0;
-        const passed = results.passed || 0;
-        const failed = (results.failed || 0) + (results.errors || 0);
-
-        const statsHtml = `
-        <div class="stats">
-        <div class="stat-card">
-        <div class="stat-value">${total}</div>
-        <div class="stat-label">Total Tests</div>
-        </div>
-        <div class="stat-card">
-        <div class="stat-value" style="color: #40c057;">${passed}</div>
-        <div class="stat-label">Passed</div>
-        </div>
-        <div class="stat-card">
-        <div class="stat-value" style="color: #fa5252;">${failed}</div>
-        <div class="stat-label">Failed</div>
-        </div>
-        </div>
-        `;
-
-        container.innerHTML = statsHtml;
+        const total = results.total || 0, passed = results.passed || 0, failed = (results.failed || 0) + (results.errors || 0);
+        const statsDiv = document.createElement('div');
+        statsDiv.innerHTML = `<div class="stats"><div class="stat-card"><div class="stat-value">${total}</div><div class="stat-label">Всего тестов</div></div><div class="stat-card"><div class="stat-value" style="color:#40c057;">${passed}</div><div class="stat-label">Пройдено</div></div><div class="stat-card"><div class="stat-value" style="color:#fa5252;">${failed}</div><div class="stat-label">Упало</div></div></div>`;
+        container.appendChild(statsDiv);
+        if (results.results && results.results.length) {
+        results.results.forEach(res => {
+        const el = document.createElement('div'); el.className = `result-item ${res.status || 'unknown'}`;
+        let errorHtml = '';
+        if (res.error_message) {
+        errorHtml = `<div style="margin-top:10px; padding:10px; background:rgba(0,0,0,0.05); border-radius:4px;"><strong>Ошибка:</strong> ${res.error_message}</div><button class="fix-button" onclick='learnFromFix("${res.test_id}", "${res.error_message}", "Исправленный код...")'>📚 Обучить AI на этом исправлении</button>`;
+        }
+        el.innerHTML = `<div style="display:flex; justify-content:space-between;"><span><strong>${res.test_id || 'Тест'}</strong></span><span style="padding:4px 8px; border-radius:4px; background:${res.status === 'passed' ? '#40c057' : '#fa5252'}; color:white;">${(res.status || 'unknown').toUpperCase()}</span></div><div style="margin-top:5px;">Длительность: ${res.duration || 0}с</div>${errorHtml}`;
+        container.insertBefore(el, container.firstChild);
+        });
+        }
         document.getElementById('resultsSection').style.display = 'block';
         }
 
-        function showLoading() {
-        document.getElementById('loading').classList.add('active');
+        // ------------------ Чат ------------------
+        async function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (!msg || !currentSessionId) return;
+        addChatMessage(msg, 'user');
+        input.value = '';
+        const typingDiv = showTypingIndicator();
+        try {
+        const res = await fetch(`/api/chat/${currentSessionId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg }) });
+        const data = await res.json();
+        if (typingDiv) typingDiv.remove();
+        if (data && data.response) addChatMessage(data.response, 'ai');
+        } catch (err) { if (typingDiv) typingDiv.remove(); addChatMessage('Ошибка: ' + err.message, 'ai'); }
         }
 
-        function hideLoading() {
-        document.getElementById('loading').classList.remove('active');
+        function addChatMessage(text, sender) {
+        const chat = document.getElementById('chatMessages');
+        const div = document.createElement('div'); div.className = `chat-message ${sender}`;
+        let safe = text || 'Пустое сообщение';
+        safe = safe.replace(/\n/g, '<br>');
+        div.innerHTML = `<div class="message-content">${safe}</div>`;
+        chat.insertBefore(div, chat.firstChild);
         }
+
+        function showTypingIndicator() {
+        const chat = document.getElementById('chatMessages');
+        const div = document.createElement('div'); div.className = 'chat-message ai';
+        div.innerHTML = `<div class="message-content"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+        chat.insertBefore(div, chat.firstChild);
+        return div;
+        }
+
+        async function learnFromFix(testId, error, fix) {
+        try {
+        const res = await fetch(`/api/learn/${currentSessionId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ test_id: testId, error: error, fix: fix }) });
+        const data = await res.json();
+        addChatMessage(data.message, 'ai');
+        } catch (e) { console.error(e); }
+        }
+
+        function showLoading() { document.getElementById('loading').classList.add('active'); }
+        function hideLoading() { document.getElementById('loading').classList.remove('active'); }
     </script>
 </body>
 </html>
